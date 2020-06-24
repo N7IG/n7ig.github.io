@@ -1,3 +1,9 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
 #rec {
     overflow: scroll;
 }
@@ -16,9 +22,18 @@
 
 #line {
     background: black;
-    width: 5px;
+    width: 3px;
     top: 100px;
     left: 50px;
     position: absolute;
     height: 5000px;
+}
+
+#depth {
+    font-size: 50px;
+    color: whitesmoke;
+    background: black;
+    top: 100px;
+    left: 50px;
+    position: absolute;
 }

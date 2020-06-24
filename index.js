@@ -6,6 +6,7 @@ const canvasR = document.getElementById("res");
 const ctxR = canvasR.getContext("2d");
 const input = document.getElementById("input");
 const line = document.getElementById("line");
+const depth = document.getElementById("depth");
 
 function plannedSlidesFromRecommendation(
     recommendation,
@@ -191,4 +192,6 @@ async function handleFiles() {
 input.addEventListener("input", handleFiles, false);
 document.addEventListener("mousemove", (event) => {
     line.style.left = `${event.pageX}px`;
+    depth.style.left = `${event.pageX}px`;
+    depth.innerText = event.pageX;
 });
