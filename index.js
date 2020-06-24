@@ -13,6 +13,7 @@ async function draw(recommendations) {
     let timePosition = 0;
     let commandCount = 0;
     let toggle = true;
+    let slideToggle = true;
 
     recommendations.forEach((rec) => {
         timePosition += 20;
@@ -20,27 +21,24 @@ async function draw(recommendations) {
 
         rec.standRecommendations.forEach((stand) => {
             stand.drillCommands.forEach((drillC) => {
-                const closurePosition = timePosition;
-                const closureI = commandCount;
-                const closureToggle = toggle;
-                // setTimeout(() => {
-                ctx.fillStyle = closureToggle
-                    ? "rgb(250, 0, 0, 0.5)"
-                    : "rgba(233, 30, 99, 0.5)";
                 if (drillC.drillCommandType === 2) {
-                    ctx.fillStyle = closureToggle
+                    ctx.fillStyle = slideToggle
                         ? "rgb(0, 150, 136, 0.9)"
                         : "rgba(76, 175, 80, 0.9)";
+                    slideToggle = !slideToggle;
+                } else {
+                    ctx.fillStyle = toggle
+                        ? "rgb(250, 0, 0, 0.5)"
+                        : "rgba(233, 30, 99, 0.5)";
+                    toggle = !toggle;
                 }
                 ctx.fillRect(
                     drillC.startDepth,
-                    closurePosition,
+                    timePosition,
                     drillC.endDepth - drillC.startDepth,
                     cw
                 );
-                // }, closureI * 10);
                 commandCount++;
-                toggle = !toggle;
             });
         });
         drawText(
