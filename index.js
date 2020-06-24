@@ -159,6 +159,7 @@ function drawText(x, y) {
 
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctxR.clearRect(0, 0, canvasR.width, canvasR.height);
 }
 
 async function main(data) {
