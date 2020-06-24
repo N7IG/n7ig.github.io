@@ -180,6 +180,6 @@ async function handleFiles() {
 
 input.addEventListener("input", handleFiles, false);
 document.addEventListener("mousemove", (event) => {
-    console.log("clientX", event.clientX);
-    line.style.left = `${event.clientX}px`;
+    console.log("pageX", event);
+    line.style.left = `${event.pageX}px`;
 });
