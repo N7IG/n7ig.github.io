@@ -2,6 +2,23 @@
     overflow: scroll;
 }
 
+#res {
+    position: sticky;
+    bottom: 0;
+    opacity: 0.9;
+    background: #1f1f1f;
+    overflow: scroll;
+}
+
 #input {
     font-size: 50px;
+}
+
+#line {
+    background: black;
+    width: 5px;
+    top: 100px;
+    left: 50px;
+    position: absolute;
+    height: 100%;
 }
