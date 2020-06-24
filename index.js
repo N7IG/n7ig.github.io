@@ -17,6 +17,7 @@ async function draw(recommendations) {
     recommendations.forEach((rec) => {
         timePosition += 20;
         toggle = true;
+
         rec.standRecommendations.forEach((stand) => {
             stand.drillCommands.forEach((drillC) => {
                 const closurePosition = timePosition;
@@ -42,7 +43,24 @@ async function draw(recommendations) {
                 toggle = !toggle;
             });
         });
+        drawText(
+            rec.standRecommendations[0].drillCommands[0].startDepth,
+            timePosition + cw - 2
+        );
+        const recLg = rec.standRecommendations.length;
+        const drilLg = rec.standRecommendations[recLg - 1].drillCommands.length;
+        drawText(
+            rec.standRecommendations[recLg - 1].drillCommands[drilLg - 1]
+                .endDepth,
+            timePosition + cw - 2
+        );
     });
+}
+
+function drawText(x, y) {
+    ctx.fillStyle = "rgb(0, 0, 0)";
+    ctx.font = "15px Arial";
+    ctx.fillText(Number(x).toFixed(3), x, y);
 }
 
 function clearCanvas() {
