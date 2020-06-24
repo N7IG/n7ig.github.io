@@ -16,6 +16,7 @@ async function draw(recommendations) {
 
     recommendations.forEach((rec) => {
         timePosition += 20;
+        toggle = true;
         rec.standRecommendations.forEach((stand) => {
             stand.drillCommands.forEach((drillC) => {
                 const closurePosition = timePosition;
@@ -24,7 +25,12 @@ async function draw(recommendations) {
                 // setTimeout(() => {
                 ctx.fillStyle = closureToggle
                     ? "rgb(250, 0, 0, 0.5)"
-                    : "rgba(0, 0, 250, 0.5)";
+                    : "rgba(233, 30, 99, 0.5)";
+                if (drillC.drillCommandType === 2) {
+                    ctx.fillStyle = closureToggle
+                        ? "rgb(0, 150, 136, 0.9)"
+                        : "rgba(76, 175, 80, 0.9)";
+                }
                 ctx.fillRect(
                     drillC.startDepth,
                     closurePosition,
