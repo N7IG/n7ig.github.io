@@ -147,8 +147,6 @@ async function drawSlides(slides) {
             ? "rgb(0, 150, 136, 0.9)"
             : "rgba(76, 175, 80, 0.9)";
 
-        console.log("SPAR:", sld.range[0], 0, sld.range[1] - sld.range[0], cw);
-
         ctxR.fillRect(sld.range[0], 0, sld.range[1] - sld.range[0], cw);
     });
 }
@@ -166,7 +164,6 @@ function clearCanvas() {
 async function main(data) {
     draw(data.recommendations);
     const slides = plannedSlidesFromRecommendations(data.recommendations);
-    console.log("slides", slides);
     drawSlides(slides);
 }
 
@@ -180,6 +177,5 @@ async function handleFiles() {
 
 input.addEventListener("input", handleFiles, false);
 document.addEventListener("mousemove", (event) => {
-    console.log("pageX", event);
     line.style.left = `${event.pageX}px`;
 });
