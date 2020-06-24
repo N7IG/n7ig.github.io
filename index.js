@@ -193,5 +193,6 @@ input.addEventListener("input", handleFiles, false);
 document.addEventListener("mousemove", (event) => {
     line.style.left = `${event.pageX}px`;
     depth.style.left = `${event.pageX}px`;
+    depth.style.top = `${event.pageY > 165 ? event.pageY - 65 : 100}px`;
     depth.innerText = event.pageX;
 });
