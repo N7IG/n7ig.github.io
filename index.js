@@ -124,14 +124,18 @@ async function draw(recommendations) {
         });
         drawText(
             rec.standRecommendations[0].drillCommands[0].startDepth,
-            timePosition + cw - 2
+            timePosition + cw - 2,
+            undefined,
+            ctx
         );
         const recLg = rec.standRecommendations.length;
         const drilLg = rec.standRecommendations[recLg - 1].drillCommands.length;
         drawText(
             rec.standRecommendations[recLg - 1].drillCommands[drilLg - 1]
                 .endDepth,
-            timePosition + cw - 2
+            timePosition + cw - 2,
+            undefined,
+            ctx
         );
     });
 }
@@ -139,6 +143,7 @@ async function draw(recommendations) {
 async function drawSlides(slides) {
     const cw = COMMAND_WIDTH * 4;
     let toggle = true;
+    let d = 1;
 
     slides.forEach((sld) => {
         toggle = !toggle;
@@ -148,11 +153,17 @@ async function drawSlides(slides) {
             : "rgba(76, 175, 80, 0.9)";
 
         ctxR.fillRect(sld.range[0], 0, sld.range[1] - sld.range[0], cw);
+        drawText(
+            sld.range[0],
+            COMMAND_WIDTH + COMMAND_WIDTH * (d++ % 2),
+            "#ffffff",
+            ctxR
+        );
     });
 }
 
-function drawText(x, y) {
-    ctx.fillStyle = "rgb(0, 0, 0)";
+function drawText(x, y, clr, ctx) {
+    ctx.fillStyle = clr || "rgb(0, 0, 0)";
     ctx.font = "15px Arial";
     ctx.fillText(Number(x).toFixed(3), x, y);
 }
