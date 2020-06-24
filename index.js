@@ -162,6 +162,7 @@ function clearCanvas() {
 }
 
 async function main(data) {
+    clearCanvas();
     draw(data.recommendations);
     const slides = plannedSlidesFromRecommendations(data.recommendations);
     drawSlides(slides);
