@@ -123,6 +123,18 @@ async function draw(recommendations) {
                 );
             });
         });
+        const firstStandCommands = _.first(rec.standRecommendations)
+            .drillCommands;
+        const firstStandStart = _.first(firstStandCommands).startDepth;
+        const firstStandEnd = _.last(firstStandCommands).endDepth;
+        ctx.fillStyle = "#7f8300";
+        ctx.fillRect(
+            firstStandStart,
+            timePosition,
+            firstStandEnd - firstStandStart,
+            cw / 4
+        );
+
         drawText(
             rec.standRecommendations[0].drillCommands[0].startDepth,
             timePosition + cw - 2,
@@ -164,7 +176,7 @@ async function drawSlides(slides) {
 }
 
 function drawText(x, y, clr, ctx) {
-    ctx.fillStyle = clr || "rgb(0, 0, 0)";
+    ctx.fillStyle = clr || "#ffffff";
     ctx.font = "15px Arial";
     ctx.fillText(Number(x).toFixed(3), x, y);
 }
