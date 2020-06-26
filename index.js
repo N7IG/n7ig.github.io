@@ -8,9 +8,10 @@ const input = document.getElementById("input");
 const line = document.getElementById("line");
 const depth = document.getElementById("depth");
 
-function plannedSlidesFromRecommendation(
+function plannedCommandsFromRecommendation(
     recommendation,
-    takeAllStands = false
+    takeAllStands = false,
+    removeOutdated = false
 ) {
     // only look at 1st recommendation (current drilling unit)
     // GetRecommendations return the history of the recommendations all the way to the target
@@ -23,49 +24,76 @@ function plannedSlidesFromRecommendation(
         return [];
     }
 
-    const drillCommands = takeAllStands
+    return takeAllStands
         ? _.flatten(
               (recommendation.standRecommendations || []).map(
-                  (stand) => stand.drillCommands
+                  getDrillCommandsWithStandBoundaries
               )
           )
-        : _.first(recommendation.standRecommendations).drillCommands;
+        : getDrillCommandsWithStandBoundaries(
+              _.first(recommendation.standRecommendations)
+          );
+}
 
-    return drillCommands
-        .filter((drillCommand) => drillCommand.drillCommandType === 2)
-        .map(drillCommandToPlannedSlideVM);
+function getDrillCommandsWithStandBoundaries(standRecommendation) {
+    const standBoundaries = getStandBoundaries(standRecommendation);
+    return standRecommendation.drillCommands.map((drillCommand) => ({
+        drillCommand,
+        standBoundaries,
+    }));
+}
+
+function getStandBoundaries(stand) {
+    return [
+        _.first(stand.drillCommands).startDepth,
+        _.last(stand.drillCommands).endDepth,
+    ];
 }
 
 function plannedSlidesFromRecommendations(recommendations) {
-    return removeOutdatedIntervals(
+    return removeOutdatedCommands(
         _.flatten(
             (recommendations || []).map((recommendation, index) => {
                 const isActualRecommendation =
                     index === recommendations.length - 1;
-                return plannedSlidesFromRecommendation(
+                return plannedCommandsFromRecommendation(
                     recommendation,
                     isActualRecommendation
                 );
             })
         )
-    );
+    )
+        .filter(
+            (combinedCommand) =>
+                combinedCommand.drillCommand.drillCommandType === 2
+        )
+        .map((combinedCommand) => ({
+            ...drillCommandToPlannedSlideVM(combinedCommand.drillCommand),
+            standBoundaries: combinedCommand.standBoundaries,
+        }));
 }
 
-function removeOutdatedIntervals(plannedSlideIntervals) {
-    return plannedSlideIntervals.reduce((filteredIntervals, nextInterval) => {
-        filteredIntervals = filteredIntervals.filter(
-            (interval) => interval.range[0] < nextInterval.range[0]
+function removeOutdatedCommands(drillCommands) {
+    return drillCommands.reduce((filteredCommands, nextCommand) => {
+        const nextDrillCommand = nextCommand.drillCommand;
+        filteredCommands = filteredCommands.filter(
+            (command) =>
+                command.drillCommand.startDepth < nextDrillCommand.startDepth
         );
 
-        if (!filteredIntervals.length) {
-            return [nextInterval];
+        if (!filteredCommands.length) {
+            return [nextCommand];
         }
 
-        if (nextInterval.range[0] < _.last(filteredIntervals).range[1]) {
-            _.last(filteredIntervals).range[1] = nextInterval.range[0];
+        if (
+            nextDrillCommand.startDepth <
+            _.last(filteredCommands).drillCommand.endDepth
+        ) {
+            _.last(filteredCommands).drillCommand.endDepth =
+                nextDrillCommand.startDepth;
         }
 
-        return [...filteredIntervals, nextInterval];
+        return [...filteredCommands, nextCommand];
     }, []);
 }
 
