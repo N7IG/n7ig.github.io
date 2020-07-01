@@ -7,6 +7,9 @@ const ctxR = canvasR.getContext("2d");
 const input = document.getElementById("input");
 const line = document.getElementById("line");
 const depth = document.getElementById("depth");
+const reverted = document.getElementById("reverted");
+
+let dataset = undefined;
 
 function plannedCommandsFromRecommendation(
     recommendation,
@@ -120,7 +123,7 @@ async function getDataJson(path) {
     return (await fetch(path)).json();
 }
 
-async function draw(recommendations) {
+async function draw(recommendations, travelling = false) {
     const cw = COMMAND_WIDTH;
     let timePosition = 0;
     let toggle = true;
@@ -131,6 +134,23 @@ async function draw(recommendations) {
         toggle = true;
 
         rec.standRecommendations.forEach((stand) => {
+            // drillCommands reverse;
+            if (travelling && stand.drillCommands.length === 2) {
+                const fst = _.first(stand.drillCommands);
+                const lst = _.last(stand.drillCommands);
+
+                stand.drillCommands[0] = {
+                    ...lst,
+                    startDepth: fst.startDepth,
+                    endDepth: fst.startDepth + lst.endDepth - lst.startDepth,
+                };
+                stand.drillCommands[1] = {
+                    ...fst,
+                    startDepth: stand.drillCommands[0].endDepth,
+                    endDepth: lst.endDepth,
+                };
+            }
+            //
             stand.drillCommands.forEach((drillC) => {
                 if (drillC.drillCommandType === 2) {
                     ctx.fillStyle = slideToggle
@@ -162,13 +182,15 @@ async function draw(recommendations) {
             firstStandEnd - firstStandStart,
             cw / 4
         );
-
-        drawText(
-            rec.standRecommendations[0].drillCommands[0].startDepth,
-            timePosition + cw - 2,
-            undefined,
-            ctx
+        let startCmd = rec.standRecommendations[0].drillCommands.filter(
+            (c) => c.drillCommandType === 2
         );
+        startCmd = startCmd.length
+            ? startCmd[0]
+            : rec.standRecommendations[0].drillCommands[0];
+
+        drawText(startCmd.startDepth, timePosition + cw - 2, undefined, ctx);
+
         const recLg = rec.standRecommendations.length;
         const drilLg = rec.standRecommendations[recLg - 1].drillCommands.length;
         drawText(
@@ -184,7 +206,7 @@ async function draw(recommendations) {
 async function drawSlides(slides) {
     const cw = COMMAND_WIDTH * 4;
     let toggle = true;
-    let d = 1;
+    let d = 0;
 
     slides.forEach((sld) => {
         toggle = !toggle;
@@ -196,7 +218,14 @@ async function drawSlides(slides) {
         ctxR.fillRect(sld.range[0], 0, sld.range[1] - sld.range[0], cw);
         drawText(
             sld.range[0],
-            COMMAND_WIDTH + COMMAND_WIDTH * (d++ % 2),
+            COMMAND_WIDTH + COMMAND_WIDTH * (d++ % 2) * 2,
+            "#ffffff",
+            ctxR
+        );
+
+        drawText(
+            sld.range[1],
+            COMMAND_WIDTH + COMMAND_WIDTH * (d++ % 2) * 2,
             "#ffffff",
             ctxR
         );
@@ -214,9 +243,9 @@ function clearCanvas() {
     ctxR.clearRect(0, 0, canvasR.width, canvasR.height);
 }
 
-async function main(data) {
+async function main(data, travelling = false) {
     clearCanvas();
-    draw(data.recommendations);
+    draw(data.recommendations, travelling);
     const slides = plannedSlidesFromRecommendations(data.recommendations);
     drawSlides(slides);
 }
@@ -224,7 +253,8 @@ async function main(data) {
 async function handleFiles() {
     const reader = new FileReader();
     reader.onload = function (e) {
-        main(JSON.parse(e.target.result));
+        dataset = JSON.parse(e.target.result);
+        main(dataset);
     };
     reader.readAsText(this.files[0]);
 }
@@ -236,3 +266,7 @@ document.addEventListener("mousemove", (event) => {
     depth.style.top = `${event.pageY > 165 ? event.pageY - 65 : 100}px`;
     depth.innerText = event.pageX;
 });
+
+function revertedFunc() {
+    dataset && main(dataset, Boolean(reverted.checked));
+}

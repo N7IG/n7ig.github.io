@@ -5,10 +5,17 @@ body {
     cursor: text;
     background: #172329;
     color: whitesmoke;
+    font-size: 50px;
 }
 
 #rec {
     overflow: scroll;
+}
+
+#reverted {
+    width: 40px;
+    cursor: pointer;
+    height: 40px;
 }
 
 #res {
