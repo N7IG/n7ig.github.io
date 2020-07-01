@@ -10,6 +10,7 @@ const depth = document.getElementById("depth");
 const reverted = document.getElementById("reverted");
 
 let dataset = undefined;
+let travelling = false;
 
 function plannedCommandsFromRecommendation(
     recommendation,
@@ -254,7 +255,7 @@ async function handleFiles() {
     const reader = new FileReader();
     reader.onload = function (e) {
         dataset = JSON.parse(e.target.result);
-        main(dataset);
+        main(dataset, travelling);
     };
     reader.readAsText(this.files[0]);
 }
@@ -268,5 +269,6 @@ document.addEventListener("mousemove", (event) => {
 });
 
 function revertedFunc() {
-    dataset && main(dataset, Boolean(reverted.checked));
+    travelling = reverted.checked;
+    dataset && main(dataset, travelling);
 }
